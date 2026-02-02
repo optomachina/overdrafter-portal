@@ -43,4 +43,4 @@ Copy `.env.example` to `.env.local` and fill in:
 ```
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
-```
+```# Deploy triggered Mon Feb  2 15:46:29 MST 2026
