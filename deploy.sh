@@ -1,21 +1,31 @@
 #!/bin/bash
 # Auto-deploy script - works with GitHub Actions or local
-
 set -e
+
+cd ~/.openclaw/workspace/overdrafter-portal
 
 echo "🚀 Starting deployment pipeline..."
 
 # 1. Run tests
 echo "Running tests..."
-npm run test:unit:run
+if ! npm run test:unit:run; then
+    ./notify.sh "❌ Tests failed - deployment aborted" "error"
+    exit 1
+fi
 
 # 2. Type check
 echo "Type checking..."
-npm run typecheck
+if ! npm run typecheck; then
+    ./notify.sh "❌ Type check failed - deployment aborted" "error"
+    exit 1
+fi
 
 # 3. Build locally to verify
 echo "Building..."
-npm run build
+if ! npm run build; then
+    ./notify.sh "❌ Build failed - deployment aborted" "error"
+    exit 1
+fi
 
 # 4. Commit any changes
 echo "Checking for changes..."
@@ -25,16 +35,14 @@ if [[ -n $(git status -s) ]]; then
     git push origin main
     echo "✅ Changes pushed to GitHub"
     echo "📡 GitHub Actions will auto-deploy to Vercel"
+    ./notify.sh "✅ Code pushed - deployment in progress" "success"
 else
     echo "ℹ️ No changes to commit"
 fi
 
-# 5. Check deployment status
-echo ""
-echo "Check deployment status at:"
-echo "https://github.com/optomachina/overdrafter-portal/actions"
-
 echo ""
 echo "✅ Pipeline complete!"
+echo "🌐 Check status: ./status.sh"
+echo "📊 Actions: https://github.com/optomachina/overdrafter-portal/actions"
 
 exit 0
