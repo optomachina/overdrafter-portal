@@ -1,6 +1,9 @@
 'use client'
 
+'use client'
+
 import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { validateUpload } from '@/lib/upload'
 
 interface FileUploadZoneProps {
@@ -8,6 +11,7 @@ interface FileUploadZoneProps {
   userId: string
   tier: 'free' | 'part-time' | 'full-time' | 'team'
   onUploadComplete?: (fileId: string) => void
+  redirectOnComplete?: boolean
 }
 
 interface UploadFile {
@@ -23,7 +27,9 @@ export default function FileUploadZone({
   userId,
   tier,
   onUploadComplete,
+  redirectOnComplete = true,
 }: FileUploadZoneProps) {
+  const router = useRouter()
   const [files, setFiles] = useState<UploadFile[]>([])
   const [isDragging, setIsDragging] = useState(false)
 
@@ -109,6 +115,21 @@ export default function FileUploadZone({
 
       updateFileStatus(uploadFile.id, 'complete')
       onUploadComplete?.(fileId)
+
+      // Check if all files complete, then redirect
+      if (redirectOnComplete) {
+        setFiles(prev => {
+          const allComplete = prev.every(f => 
+            f.id === uploadFile.id || f.status === 'complete'
+          )
+          if (allComplete) {
+            setTimeout(() => {
+              router.push(`/project/${projectId}`)
+            }, 1000)
+          }
+          return prev
+        })
+      }
 
     } catch (error) {
       updateFileStatus(uploadFile.id, 'error', error instanceof Error ? error.message : 'Upload failed')
