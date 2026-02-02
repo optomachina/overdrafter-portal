@@ -190,23 +190,7 @@ export default function FileUploadZone({
         <p className="text-sm text-gray-400">
           Supported: .sldprt, .sldasm, .slddrw, .step, .pdf
         </p>
-        <p className="text-sm text-gray-400 mt-1">
-          Max size: {tier === 'free' ? '100MB' : '500MB'}
-        </p>
       </div>
-
-      {/* Free Tier Warning */}
-      {tier === 'free' && (
-        <div className="mt-4 p-4 bg-yellow-900/30 border border-yellow-700 rounded-lg">
-          <p className="text-sm text-yellow-200">
-            ⚠️ Free tier: Files auto-deleted after 30 days.
-            {' '}
-            <a href="/pricing" className="underline hover:text-yellow-100">
-              Upgrade for permanent storage
-            </a>
-          </p>
-        </div>
-      )}
 
       {/* File List */}
       {files.length > 0 && (

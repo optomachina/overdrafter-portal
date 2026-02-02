@@ -196,11 +196,6 @@ export default function ProjectPage() {
                     <p className="font-medium truncate">{file.filename}</p>
                     <p className="text-sm text-gray-400">
                       {formatSize(file.size_bytes)} • Version {file.version}
-                      {file.expires_at && (
-                        <span className="text-yellow-500 ml-2">
-                          • Expires {formatDate(file.expires_at)}
-                        </span>
-                      )}
                     </p>
                   </div>
 
