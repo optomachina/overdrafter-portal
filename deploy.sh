@@ -1,12 +1,9 @@
 #!/bin/bash
-# Auto-deploy script - runs after tests pass
+# Auto-deploy script - works with GitHub Actions or local
 
 set -e
 
-REPO="optomachina/overdrafter-portal"
-PROJECT="overdrafter-portal"
-
-echo "🚀 Starting autonomous deployment..."
+echo "🚀 Starting deployment pipeline..."
 
 # 1. Run tests
 echo "Running tests..."
@@ -16,7 +13,7 @@ npm run test:unit:run
 echo "Type checking..."
 npm run typecheck
 
-# 3. Build
+# 3. Build locally to verify
 echo "Building..."
 npm run build
 
@@ -26,17 +23,18 @@ if [[ -n $(git status -s) ]]; then
     git add .
     git commit -m "Auto-commit: $(date '+%Y-%m-%d %H:%M')"
     git push origin main
-    echo "✅ Changes pushed"
+    echo "✅ Changes pushed to GitHub"
+    echo "📡 GitHub Actions will auto-deploy to Vercel"
+else
+    echo "ℹ️ No changes to commit"
 fi
 
-# 5. Deploy to Vercel (using token)
-if [ -n "$VERCEL_TOKEN" ]; then
-    echo "Deploying to Vercel..."
-    vercel --token "$VERCEL_TOKEN" --prod --yes
-    echo "✅ Deployed"
-fi
+# 5. Check deployment status
+echo ""
+echo "Check deployment status at:"
+echo "https://github.com/optomachina/overdrafter-portal/actions"
 
-# 6. Notify
-echo "✅ Deployment complete!"
+echo ""
+echo "✅ Pipeline complete!"
 
 exit 0
