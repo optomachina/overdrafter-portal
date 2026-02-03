@@ -112,6 +112,29 @@ export default function ProjectPage() {
     }
   }
 
+  const handleDownload = async (fileId: string, filename: string) => {
+    try {
+      const response = await fetch(`/api/files/${fileId}/download`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to get download URL')
+      }
+      
+      const { downloadUrl } = await response.json()
+      
+      // Trigger download
+      const link = document.createElement('a')
+      link.href = downloadUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } catch (err) {
+      console.error('Download failed:', err)
+      alert('Failed to download file. Please try again.')
+    }
+  }
+
   if (loading || !project) {
     return (
       <main className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
@@ -203,7 +226,14 @@ export default function ProjectPage() {
                     <span className="text-sm text-gray-500">
                       {formatDate(file.created_at)}
                     </span>
-                    <button className="p-2 text-gray-400 hover:text-white">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownload(file.id, file.filename);
+                      }}
+                      className="p-2 text-gray-400 hover:text-white"
+                      title="Download"
+                    >
                       ⬇️
                     </button>
                   </div>
